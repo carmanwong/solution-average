@@ -1,4 +1,58 @@
+import time
+from tweepy import Stream
+from tweepy import OAuthHandler
+from tweepy.streaming import StreamListener
+import tweepy
+import time
+import urllib
+import json
+import sys
+import csv
+import re
+from watson_developer_cloud import ToneAnalyzerV3
 
+ckey = "r27pD98Njw3xR16etBJzUSGIl" #""LgTkFWkDNUGCbuEkqVqCbAkm5
+csecret = "WUkS92ojlYz9HZJ7n0mMraIQ8TB4RdinxFiTdHFSLXH11JweeV" #"bWh96OUqUid9ThkmAKoAOpmfrmSbPTJqytwijJixdYDZFpp9Wg
+atoken = "51715790-Z3Vqs8EwlfrUvq92Yp4BSxXxVmMfpPBZKPCEhkMMN" #51715790-"hDAgGPPF4O0YNWE4NCMBUZExUp0brdgGw4KIGXyrL
+asecret = "USNsLTAdQBMpiGirs2LyXq3LP3jySB52qztrwuWIUTVRB" #"QVSxMvJWT5uiehMWqOMqdGsjQo2FGWpEOEyxo5DmfbgYW
+
+tone_analyzer = ToneAnalyzerV3(
+   username='c712c79c-0774-4478-8d08-2ee85d48a5e8',
+   password='uu6NSwq7UkGB',
+   version='2017-03-27')
+
+sentdexAuth = ''
+
+def remove_urls (vTEXT):
+    vTEXT = re.sub(r'(https|http)?:\/\/(\w|\.|\/|\?|\=|\&|\%)*\b', '', vTEXT, flags=re.MULTILINE)
+    return(vTEXT)
+
+def sentimentAnalysis(text):
+	encode_text = urllib.quote(text)
+	API_Call = 'http://sentdex.com/api/api.php?text='+encode_text+'&auth='+sentdexAuth
+	x = len(text)
+	output = urllib.urlopen(API_Call).read()
+	return output
+
+
+def analyze_tone(text):
+    username = 'c712c79c-0774-4478-8d08-2ee85d48a5e8'
+    password = 'uu6NSwq7UkGB'
+    watsonUrl = 'https://gateway.watsonplatform.net/tone-analyzer/api'
+    headers = {"content-type": "text/plain"}
+    data = text
+    try:
+        r = requests.post(watsonUrl, auth=(username,password),headers = headers,
+         data=data)
+        return r.text
+    except:
+        return False
+
+def display_results(data):
+    data = json.loads(str(data))
+
+    anger = float (data['document_tone']['tone_categories'][0]['tones'][0]['score'])
+    print anger_s
     disgust = float (data['document_tone']['tone_categories'][0]['tones'][1]['score'])
     print disgust
     fear = float (data['document_tone']['tone_categories'][0]['tones'][2]['score'])
